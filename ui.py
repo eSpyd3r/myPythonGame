@@ -38,7 +38,7 @@ class UI:
 
 		#drawing the bar
 		pygame.draw.rect(self.display_surface,color, current_rect)
-		pygame.draw.rect(self.display_surface,UI_BORDER_COLOR,bg_rect,3)
+		pygame.draw.rect(self.display_surface,UI_BORDER_COLOR,bg_rect,3)  
 
 	def show_exp(self,exp):
 		text_surf = self.font.render(str(int(exp)),False,TEXT_COLOR)
