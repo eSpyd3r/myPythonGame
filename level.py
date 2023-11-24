@@ -6,6 +6,7 @@ from debug import debug
 from support import *
 from random import choice
 from weapon import Weapon
+from ui import UI
 
 class Level:
 	def __init__(self):
@@ -22,6 +23,9 @@ class Level:
 
 		#sprite setup
 		self.create_map()
+
+		#user interface
+		self.ui = UI()
 
 	def create_map(self):
 		layout = {
@@ -54,10 +58,19 @@ class Level:
 		#			Tile((x,y),[self.visible_sprites,self.obstacle_sprites])
 		#		if col == 'p':
 		#			self.player = Player((x,y),[self.visible_sprites],self.obstacle_sprites) 
-		self.player = Player((2000,1430),[self.visible_sprites],self.obstacle_sprites,self.create_attack,self.destroy_attack) 
+		self.player = Player((2000,1430),[self.visible_sprites],
+			self.obstacle_sprites,
+			self.create_attack,
+			self.destroy_attack,
+			self.create_magic) 
 
 	def create_attack(self):
 		self.current_attack = Weapon(self.player,[self.visible_sprites])
+
+	def create_magic(self, style, strength, cost):
+		print(style)
+		print(strength)
+		print(cost)
 
 	def destroy_attack(self):
 		if self.current_attack:
@@ -68,8 +81,7 @@ class Level:
 		#update/draw game
 		self.visible_sprites.custom_draw(self.player)
 		self.visible_sprites.update()
-
-		debug(self.player.status)
+		self.ui.display(self.player)
 
 class YSortCameraGroup(pygame.sprite.Group):
 	def __init__(self):
