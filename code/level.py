@@ -10,12 +10,14 @@ from ui import UI
 from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
+from upgrade import Upgrade
 
 class Level:
 	def __init__(self):
 
 		# get the display surface
 		self.display_surface = pygame.display.get_surface()
+		self.game_paused = False
 
 		# setup the sprite groups
 		self.visible_sprites = YSortCameraGroup()
@@ -32,6 +34,7 @@ class Level:
 
 		#user interface
 		self.ui = UI()
+		self.upgrade = Upgrade(self.player)
 
 		#particles
 		self.animation_player = AnimationPlayer()
@@ -85,7 +88,8 @@ class Level:
 								Enemy(monster_name,(x,y),[self.visible_sprites,self.attackable_sprites],
 									self.obstacle_sprites,
 									self.damage_player,
-									self.trigger_death_particles)
+									self.trigger_death_particles,
+									self.add_xp)
 
 	def create_attack(self):
 		self.current_attack = Weapon(self.player,[self.visible_sprites, self.attack_sprites])
@@ -96,7 +100,6 @@ class Level:
 
 		if style == 'flame':
 			self.magic_player.flame(self.player,cost,[self.visible_sprites,self.attack_sprites])
-
 
 	def destroy_attack(self):
 		if self.current_attack:
@@ -129,13 +132,26 @@ class Level:
 
 		self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
 
+	def add_xp(self,amount):
+
+		self.player.exp += amount
+
+	def toggle_menu(self):
+		self.game_paused = not self.game_paused
+
+
 	def run(self):
-		#update/draw game
 		self.visible_sprites.custom_draw(self.player)
-		self.visible_sprites.update()
-		self.visible_sprites.enemy_update(self.player)
-		self.player_attack_logic()
 		self.ui.display(self.player)
+
+		#pause mechanic
+
+		if self.game_paused:
+			self.upgrade.display()
+		else:
+			self.visible_sprites.update()
+			self.visible_sprites.enemy_update(self.player)
+			self.player_attack_logic()
 
 
 class YSortCameraGroup(pygame.sprite.Group):
